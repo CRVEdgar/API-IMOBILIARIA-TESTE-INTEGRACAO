@@ -35,11 +35,11 @@ public class AlugueisController {
         return locacaoConvertAssembler.convert_Lista_para_DTO(aluguelService.findAll());
     }
 
-    @GetMapping("/buscarativo/{aluguelId}")
-    public LocacaoDTO busca_Se_AluguelAtivo(@PathVariable Long aluguelId) {
-        return locacaoConvertAssembler
-                .convert_para_DTO(aluguelService.findById(aluguelId));
-    }
+//    @GetMapping("/buscarativo/{aluguelId}")
+//    public LocacaoDTO busca_Se_AluguelAtivo(@PathVariable Long aluguelId) {
+//        return locacaoConvertAssembler
+//                .convert_para_DTO(aluguelService.findById(aluguelId));
+//    }
 
     @GetMapping("/criar/{aluguelId}")
     public void criarAluguel(@PathVariable Long aluguelId){
@@ -51,11 +51,11 @@ public class AlugueisController {
         aluguelService.desativarLocacao(aluguelId);
     }
 
-    @GetMapping("/paginado")
-    public Page<Locacao> buscaPaginadaAtivos(@PageableDefault(sort = "id", direction = Sort.Direction.ASC, page = 0, size = 5)
-                                                Pageable paginacao) {
-        Page<Locacao> pageLocacao = aluguelService.buscaPaginadadeAtivos(paginacao);
-        return pageLocacao;
-    }
+//    @GetMapping("/paginado")
+//    public Page<Locacao> buscaPaginadaAtivos(@PageableDefault(sort = "id", direction = Sort.Direction.ASC, page = 0, size = 5)
+//                                                Pageable paginacao) {
+//        Page<Locacao> pageLocacao = aluguelService.buscaPaginadadeAtivos(paginacao);
+//        return pageLocacao;
+//    }
 
 }

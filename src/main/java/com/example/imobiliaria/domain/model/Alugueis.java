@@ -21,6 +21,9 @@ public class Alugueis {
     @Temporal(TemporalType.DATE)
     private Date dt_vencimento;
 
+    @Temporal(TemporalType.DATE)
+    private Date dt_pagamento;
+
     private BigDecimal valor_pago;
     private String obs;
 

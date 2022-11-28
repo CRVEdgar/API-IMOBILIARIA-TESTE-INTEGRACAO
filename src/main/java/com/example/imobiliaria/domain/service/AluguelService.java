@@ -2,6 +2,7 @@ package com.example.imobiliaria.domain.service;
 
 
 import com.example.imobiliaria.domain.exception.NegocioException;
+import com.example.imobiliaria.domain.model.Alugueis;
 import com.example.imobiliaria.domain.model.Locacao;
 import com.example.imobiliaria.domain.repository.AlugueisRepository;
 import com.example.imobiliaria.domain.repository.LocacaoRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AluguelService {
@@ -29,11 +31,21 @@ public class AluguelService {
         return alugueisList;
     }
 
-    public Locacao findById(Long idLocacao){
-        /**retorna o aluguel do id informado desde que esteja com com ativo==1*/
-        return locacaoRepository.findByAtivoAndId(true,idLocacao)
-                .orElseThrow( () -> new NegocioException("O aluguel informado nao está ativo ou id invalido"));
+    public List<Alugueis> findAllAlugueis(){
+        return repository.findAll();
     }
+
+    public Alugueis findById(Long idLocacao){
+
+        return repository.findById(idLocacao)
+                .orElseThrow( () -> new NegocioException("O aluguel com id invalido"));
+    }
+
+//    public Locacao findById(Long idLocacao){
+//        /**retorna o aluguel do id informado desde que esteja ativo*/
+//        return locacaoRepository.findByAtivoAndId(true,idLocacao)
+//                .orElseThrow( () -> new NegocioException("O aluguel informado nao está ativo ou id invalido"));
+//    }
 
     public void ativarLocacao(Long idLocacao){
         /**metodo ativa uma locação*/
@@ -57,8 +69,36 @@ public class AluguelService {
         locacaoService.save(locacao);
     }
 
-    public Page<Locacao> buscaPaginadadeAtivos(Pageable paginacao) {
-        return locacaoRepository.findByAtivo(true, paginacao);
+    public List<Alugueis> findAllByClienteName(String clienteName){
+        return repository.findAllByLocacaoCliente_Nome(clienteName);
+    }
+
+    /** @buscar-alugueis-pagos*/
+    public List<Alugueis> findAllByClienteNameAndPaid(String clienteName){
+        List<Alugueis> all = repository.findAllByLocacaoCliente_Nome(clienteName);
+
+        List<Alugueis> delayedPayments = all.stream()
+                .filter(
+                        al -> {
+                            return al.getValor_pago() != null || ! al.getValor_pago().equals(0);
+                        }
+                )
+                .collect(Collectors.toList());
+
+        return delayedPayments;
+    }
+
+    /** @buscar-pagamentos-com-atraso*/
+    public List<Alugueis> findAllByClienteNameAndPaidLate(String clienteName){
+        List<Alugueis> all = repository.findAllByLocacaoCliente_Nome(clienteName);
+
+        List<Alugueis> delayedPayments = all.stream()
+                .filter(
+                        al -> al.getDt_pagamento().after(al.getDt_vencimento())
+                )
+                .collect(Collectors.toList());
+
+        return delayedPayments;
     }
 
 }

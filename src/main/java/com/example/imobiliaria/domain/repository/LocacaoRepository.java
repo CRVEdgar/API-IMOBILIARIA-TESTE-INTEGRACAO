@@ -19,6 +19,6 @@ public interface LocacaoRepository extends JpaRepository<Locacao, Long> {
 
     Optional<Locacao> findByAtivoAndId(boolean ativo, Long id);
 
-    Page<Locacao> findByAtivo(boolean ativo, Pageable paginacao);
+//    Page<Locacao> findByAtivo(boolean ativo, Pageable paginacao);
 
 }
