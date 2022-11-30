@@ -3,6 +3,7 @@ package com.example.imobiliaria.domain.service;
 import com.example.imobiliaria.domain.exception.NegocioException;
 import com.example.imobiliaria.domain.model.Alugueis;
 
+import com.example.imobiliaria.domain.model.Imoveis;
 import com.example.imobiliaria.domain.model.Locacao;
 import com.example.imobiliaria.util.AluguelBuilder;
 
@@ -10,7 +11,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -78,7 +81,6 @@ public class AluguelServiceTest {
        assertNotNull(alugueisResponse);
        Assertions.assertThat( alugueisResponse ).allMatch( al -> al.getValor_pago()!=null || ! al.getValor_pago().equals(0) );
 
-//       theInt.Should().BeGreaterOrEqualTo(5);
     }
 
     @Test
@@ -94,6 +96,31 @@ public class AluguelServiceTest {
 
     }
 
+    @Test
+    @DisplayName("deve realizar o pagamento do aluguel para o imovel desejado")
+    public void pagamentodeAluguel(){
 
+        Imoveis imovelMock = new Imoveis();
+        ReflectionTestUtils.setField(imovelMock, "id", 1L);
+        BigDecimal valorPago = new BigDecimal(1000);
+
+        Alugueis aluguelResponse = service.registrarPagamento(valorPago, imovelMock);
+
+        assertNotNull(aluguelResponse);
+        assertEquals(valorPago, aluguelResponse.getValor_pago());
+    }
+
+    @Test
+    @DisplayName("deve realizar lançar uma exception caso o valor pago seja inferior ao valor do aluguel")
+    public void pagamentodeAluguelComValorInferiro(){
+
+        Imoveis imovelMock = new Imoveis();
+        ReflectionTestUtils.setField(imovelMock, "id", 1L);
+        BigDecimal valorPago = new BigDecimal(850);
+
+        Assertions.assertThatExceptionOfType(NegocioException.class)
+                .isThrownBy(() -> service.registrarPagamento(valorPago, imovelMock))
+                .withMessage("Pagamento com valor inferior ao preço do aluguel");
+    }
 
 }

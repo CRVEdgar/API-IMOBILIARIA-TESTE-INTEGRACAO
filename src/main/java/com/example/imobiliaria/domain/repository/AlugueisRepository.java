@@ -14,4 +14,6 @@ public interface AlugueisRepository extends JpaRepository<Alugueis, Long> {
     List<Alugueis> findAllByLocacaoCliente_Nome(String nome);
 
     List<Alugueis> findAllByLocacaoClienteNome(String nome);
+
+    Alugueis findByLocacao_Imovel_Id(Long id);
 }

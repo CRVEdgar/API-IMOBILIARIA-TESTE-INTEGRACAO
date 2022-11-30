@@ -3,6 +3,7 @@ package com.example.imobiliaria.domain.service;
 
 import com.example.imobiliaria.domain.exception.NegocioException;
 import com.example.imobiliaria.domain.model.Alugueis;
+import com.example.imobiliaria.domain.model.Imoveis;
 import com.example.imobiliaria.domain.model.Locacao;
 import com.example.imobiliaria.domain.repository.AlugueisRepository;
 import com.example.imobiliaria.domain.repository.LocacaoRepository;
@@ -11,6 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,12 +45,6 @@ public class AluguelService {
         return repository.findById(idLocacao)
                 .orElseThrow( () -> new NegocioException("O aluguel com id invalido"));
     }
-
-//    public Locacao findById(Long idLocacao){
-//        /**retorna o aluguel do id informado desde que esteja ativo*/
-//        return locacaoRepository.findByAtivoAndId(true,idLocacao)
-//                .orElseThrow( () -> new NegocioException("O aluguel informado nao está ativo ou id invalido"));
-//    }
 
     public void ativarLocacao(Long idLocacao){
         /**metodo ativa uma locação*/
@@ -99,6 +98,23 @@ public class AluguelService {
                 .collect(Collectors.toList());
 
         return delayedPayments;
+    }
+
+    public Alugueis registrarPagamento(BigDecimal valorPago, Imoveis imovelAlugado){
+
+        Alugueis aluguelPago = repository.findByLocacao_Imovel_Id(imovelAlugado.getId());
+
+        if( valorPago.compareTo(aluguelPago.getLocacao().getValor_alugue()) >= 0 ){
+            aluguelPago.setValor_pago(valorPago);
+            aluguelPago.setDt_pagamento( new Date(System.currentTimeMillis()) );
+            aluguelPago.setObs("Proximo vencimento em: " +  LocalDate.now( ).plusDays(30) );
+
+            repository.save(aluguelPago);
+            return aluguelPago;
+        }else{
+            throw new NegocioException("Pagamento com valor inferior ao preço do aluguel");
+        }
+
     }
 
 }
