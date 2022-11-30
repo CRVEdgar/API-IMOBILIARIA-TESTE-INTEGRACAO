@@ -29,6 +29,7 @@ public class Imoveis {
     private Integer suites;
     private Integer metragem;
     private BigDecimal valor_aluguel_suge;
+    private boolean ativo;
     private String obs;
 
     @JsonIgnore

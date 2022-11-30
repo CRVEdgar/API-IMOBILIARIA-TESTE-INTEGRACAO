@@ -30,10 +30,10 @@ public class AlugueisController {
     @Autowired
     private LocacaoConvertDISAssembler locacaoConvertDISAssembler;
 
-    @GetMapping
-    public List<LocacaoDTO> listarAlugueisAtivos() {
-        return locacaoConvertAssembler.convert_Lista_para_DTO(aluguelService.findAll());
-    }
+//    @GetMapping
+//    public List<LocacaoDTO> listarAlugueisAtivos() {
+//        return locacaoConvertAssembler.convert_Lista_para_DTO(aluguelService.findAll());
+//    }
 
 //    @GetMapping("/buscarativo/{aluguelId}")
 //    public LocacaoDTO busca_Se_AluguelAtivo(@PathVariable Long aluguelId) {
