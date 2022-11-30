@@ -1,10 +1,12 @@
 package com.example.imobiliaria.domain.service;
 
 import com.example.imobiliaria.domain.model.Imoveis;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,16 +40,25 @@ public class ImovelServiceTest {
                         .allMatch(imovel -> imovel.getTipo_Imovel().equals("Apartamento"))
         );
 
-        assertFalse(
-                imoveisResponse
-                        .stream()
-                        .allMatch(imovel -> imovel.isAtivo())
-        );
-
         assertTrue(
                 imoveisResponse
                         .stream()
                         .allMatch(imovel -> imovel.getBairro().equals(bairroMock))
         );
     }
+
+    @Test
+    @DisplayName("deve retornar todos os imoveis disponíveis com valor do aluguel igual ou inferior ao valor informado.")
+    public void buscarPorPreco(){
+
+        BigDecimal limite = new BigDecimal(650.50);
+
+        List<Imoveis> imoveisResponse = service.findByPriceAndAvailable(limite);
+
+        assertTrue(imoveisResponse.stream()
+                .allMatch(imovel -> imovel.getValor_aluguel_suge().compareTo(limite) <= 0));
+
+    }
+
+
 }

@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,5 +89,22 @@ public class ImovelService {
         locacoes.forEach( l -> imoveisDisponiveis.add(l.getImovel()));
         return imoveisDisponiveis;
 
+    }
+
+    public List<Imoveis> findByPriceAndAvailable(BigDecimal limitedPrice){
+        List<Imoveis> imoveisFilter = new ArrayList<>();
+
+        List<Locacao> todasLocaoes = locacaoRepository.findAll();
+
+        List<Locacao> locacoesFilter = todasLocaoes.stream()
+                .filter( l -> l.getImovel().getValor_aluguel_suge().compareTo(limitedPrice) <= 0 )
+                .filter(l-> !l.isAtivo())
+                .collect(Collectors.toList());
+
+        if(locacoesFilter != null || !locacoesFilter.isEmpty() ){
+            locacoesFilter.forEach( l -> imoveisFilter.add(l.getImovel()) );
+        }
+
+        return imoveisFilter;
     }
 }
